@@ -1,13 +1,27 @@
 require 'rubygems'
 require 'sinatra'
+require 'instagram'
 
 configure do
   enable :sessions
 end
 
+recent_media_url = "https://api.instagram.com/v1/users/271035399/media/recent/?client_id=2d53c155803e4fda8dfb34d1bcf8d4a4"
+USER_ID=271035399
+
+Instagram.configure do |config|
+  config.client_id = "2d53c155803e4fda8dfb34d1bcf8d4a4"
+  config.client_secret = "1d36c03c071e4da088afed8faf565524"
+  # For secured endpoints only
+  #config.client_ips = '<Comma separated list of IPs>'
+end
+
 helpers do
   def username
-    session[:identity] ? session[:identity] : 'Hello stranger'
+    session[:identity] ? session[:identity] : 'stranger'
+  end
+  def media
+    Instagram.user_recent_media(USER_ID)
   end
 end
 
@@ -21,6 +35,10 @@ end
 
 get '/' do
   erb 'Can you handle a <a href="/secure/place">secret</a>?'
+end
+
+get '/picture-stream' do
+  erb :picture_stream
 end
 
 get '/login/form' do 
